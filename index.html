@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XB3PR2Y1TQ"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-XB3PR2Y1TQ');
+    </script>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Canonicalization Objaverse LIVS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css">
+    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,500,600' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="css/Highlight-Clean.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/main.css">
+
+    <script src="js/video_comparison.js"></script>
+    <script type="module" src="https://unpkg.com/@google/model-viewer@2.0.1/dist/model-viewer.min.js"></script>
+
+    <style>
+        .center-text {
+          text-align: center;
+        }
+      </style>
+</head>
+
+<body id="main">
+    <div class="highlight-clean" style="padding-bottom: 10px;">
+        <div id="title" class="x-gradient-font">
+            <span > One-shot 3D Object Canonicalization based on Geometric and Semantic
+                Consistency</span><br>
+            <!-- <span style="font-size: 43px;">for Scalable and Versatile 3D Generation</span> -->
+        </div>
+        <h2 class="title is-3" style="color: red; text-align: center;" >CVPR2025</h2>
+    </div>
+
+    
+
+    <!-- 
+     Li Jin1,4 Yujie Wang2,3 Wenzheng Chen2 Qiyu Dai2 Qingzhe Gao2 Baoquan Chen2* Xueying Qin1,4
+ 1School of Software, Shandong University 2Peking University 3University of North Carolina at Chapel Hill
+ 4Engineering Research Center of Digital Media Technology, Ministry of Education, P.R. China 
+    -->
+    <div id="authors">
+        <div><a class="link" >Li Jin</a><sup>1,4</sup></div>
+        <div><a class="link" >Yujie Wang</a><sup>3</sup></div>
+        <div><a class="link" >Wenzheng Chen</a><sup>2</sup></div>
+        <div><a class="link" >Qiyu Dai</a><sup>2</sup></div>
+        <div><a class="link" >Qingzhe Gao</a><sup>1,2</sup></div>
+        <div><a class="link" >Baoquan Chen</a><sup>2*</sup></div>
+        <div><a class="link" >Xueying Qin</a><sup>1,4</sup></div>
+    </div>
+    <div id="institution">
+        <div><sup>1</sup><a class="link" >School of Software, Shandong University</a></div>
+        <div><sup>2</sup><a class="link" >Peking University</a></div>
+        <div><sup>3</sup><a class="link" >University of North Carolina at Chapel Hill</a></div>
+        <div><sup>4</sup><a class="link" >Engineering Research Center of Digital Media Technology, Ministry of Education, P.R. China </a></div>
+    </div>
+    <!-- <div id="links">
+        <div><a id="paper" href="https://arxiv.org/pdf/2412.01506.pdf">Paper</a></div>
+        <div><a id="arxiv" href="https://arxiv.org/abs/2412.01506">Arxiv</a></div>
+        <div><a id="code" href="https://github.com/Microsoft/TRELLIS">Code</a></div>
+        <div><a id="demo" href="https://huggingface.co/spaces/JeffreyXiang/TRELLIS">Demo</a></div>
+    </div> -->
+    
+
+    <div id="links">
+        <div><a id="Objaverse Tools" href="https://github.com/JinLi998/CanonObjaverseDataset" 
+            style="height: max-content;;"
+            >Toolkit</a></div>
+        <div><a id="Canonical Labels" href="https://github.com/JinLi998/CanonObjaverseDataset/blob/master/data/CanonicalObjaverseDataset.json" 
+            style="height: max-content;"
+            >Labels</a></div>
+    </div> 
+    
+
+    <div class="container" style="max-width: 768px; margin-bottom: 40px;">
+        <div id="abstract" class="x-gradient-block" style="text-align: justify;">
+            3D object canonicalization is a fundamental task, essential for a variety of downstream tasks. Existing methods rely on either cumbersome manual processes or priors learned from extensive, per-category training samples. Real-world datasets, however, often exhibit long-tail distributions, challenging existing learning-based methods, especially in categories with limited samples. We address this by introducing the first one-shot category-level object canonicalization framework, requiring only a single canonical model as a reference (the "prior model") for each category. To canonicalize any object, our framework first extracts semantic cues with large language models (LLMs) and vision-language models (VLMs) to establish correspondences with the prior model. We introduce a novel joint energy function to enforce geometric and semantic consistency, aligning object orientations precisely despite significant shape variations. Moreover, we adopt a support-plane strategy to reduce search space for initial poses and utilize a semantic relationship map to select the canonical pose from multiple hypotheses. Extensive experiments on multiple datasets demonstrate that our framework achieves state-of-the-art performance and validates key design choices. Using our framework, we create the Canonical Objaverse Dataset (COD), canonicalizing 32K samples in the Objaverse-LVIS dataset, underscoring the effectiveness of our framework on handling large-scale datasets.
+        </div>
+    </div>
+    
+    <!-- *************************方法的framework************************* -->
+    <div class="container" style="max-width: 768px;">
+        <!-- 比较 -->
+        <div class="x-section-title"><div class="x-gradient-font center-text">Method Overview</div></div>
+        <p>
+            Our approach enables category-level object canonicalization using a single prior model for each category. We begin by utilizing large language models (LLM) and vision-language models (VLM) to capture the 3D semantics of both the prior model and the test model, establishing semantic correspondences (left). Next, we generate canonical pose hypotheses and introduce a joint energy function that integrates semantic and geometric cues, facilitating accurate alignment with the prior model (middle). Finally, we identify the optimal canonical pose using a semantic relationship map (right) by evaluating the consistency of semantic positions.
+        </p>
+        <p style="text-align: center;">
+            <!-- <img src="imgs/statistics_cates_num_plan.png" alt="描述图片" style="width:100%;"> -->
+            <!-- <img src="imgs/compare.png" alt="描述图片" style="width:100%;"> -->
+            <!-- <img src="imgs/class-objects.png" alt="描述图片" style="width:100%;"> -->
+            <img src="imgs/framework-2025-3-21.png" alt="描述图片" style="width:98%;">
+        </p>
+    </div>
+
+    <!-- *************************数据集的对比************************* -->
+    <div class="container" style="max-width: 768px;">
+        <!-- 比较 -->
+        <div class="x-section-title"><div class="x-gradient-font center-text">Comparison with Canonical Dataset</div></div>
+        <p>
+            Compared to existing datasets, COD features the largest number of categories and shapes. More importantly, we obtain 33k valid data with just two annotators over approximately eight hours, completed the alignment of the 40k shape dataset, which demonstrates capability to handle larger-scale datasets. Next, we will process the Objaverse-1.0 dataset, which contains 800k shapes.
+        </p>
+        <p style="text-align: center;">
+            <!-- <img src="imgs/statistics_cates_num_plan.png" alt="描述图片" style="width:100%;"> -->
+            <!-- <img src="imgs/compare.png" alt="描述图片" style="width:100%;"> -->
+            <!-- <img src="imgs/class-objects.png" alt="描述图片" style="width:100%;"> -->
+            <img src="imgs/datasetNum2.png" alt="描述图片" style="width:80%;">
+        </p>
+    </div>
+
+    <!-- 标注和评估 -->
+    <div class="container" style="max-width: 768px; margin-bottom: 40px;">
+        <!-- 手动标注和评估 -->
+        <!-- <h3 class="center-text"><b>Part Manual Annotation and Evaluation</b></h3> -->
+        <div class="x-section-title"><div class="x-gradient-font center-text">Data Statistics and Analysis</div></div>
+
+        <p style="text-align: justify;">
+
+            The figure below compares the Objaverse-LVIS dataset before and after applying our canonicalization method. Before canonicalization, only <span style="color: red; font-weight: bold;">24%</span> of the objects were properly aligned. Following our processing, the proportion of canonicalized data increased by <span style="color: red; font-weight: bold;">55%</span>, highlighting the effectiveness of our approach. Subsequently, we created the Canonical Objaverse Dataset (COD) by extracting 79% of canonical objects from the Canonical Objaverse-LVIS Dataset.
+
+        </p>
+        <div style="text-align: center;">
+            <img src="imgs/beforeAfterDis.png" alt="描述图片" style="width:100%;">
+        </div>
+    </div>
+
+    <!-- 对齐前后的交互 -->
+    <div class="container" style="max-width: 768px; margin-bottom: 40px; width: 100%;">
+        <div class="x-section-title"><div class="x-gradient-font center-text">Visual Comparisons</div></div>
+        <!-- <h6 class="caption">Something</h6> -->
+        <p style="text-align: justify;">
+        We propose a one-shot canonicalization method based on the semantic and support information, enabling the canonicalization of 3D objects within the same category, even in the presence of significant differences in shape and appearance. The term "Initial" refers to the original objects, while "Canonical" denotes the canonical objects. The terms "Objects" and "semantics" represent the shape and meaning of the objects, respectively.
+        </p>
+        <div class="video-compare-container" style="width: 100%">
+            <video class="video lazy" id="ex1" loop playsinline autoplay muted onplay="resizeAndPlay(this)" style="height: 0px;">
+                <source data-src="videos/alignedCourse/foal/high350_resized_objBeforeAfter.mp4" type="video/mp4"></source>
+            </video>
+            <canvas height="752" class="videoMerge" id="ex1Merge" width="1002"></canvas>
+        </div>
+
+        <div class="video-compare-container" style="width: 100%">
+                <video class="video lazy" id="ex2" loop playsinline autoplay muted onplay="resizeAndPlay(this)" style="height: 0px;">
+                    <source data-src="videos/alignedCourse/foal/high350_resized_semanticBeforeAfter.mp4" type="video/mp4"></source>
+                </video>
+                <canvas height="752" class="videoMerge" id="ex2Merge" width="1002"></canvas>
+        </div>
+        <p style="text-align: center;">
+        (Use the slider to compare the results before and after canonicalization.)
+        </p>
+    </div>
+
+
+
+    <!-- 对齐的过程 -->
+    <div class="container" style="max-width: 768px; margin-bottom: 40px; width: 100%;">
+        <!-- <h3 class="center-text"><b>Canonicalization Process</b></h3> -->
+        <div class="x-section-title"><div class="x-gradient-font center-text">Canonicalization Process</div></div>
+        <!-- <h6 class="caption">Category: "banana"</h6> -->
+        <div style="display: flex; align-items: center;">
+            <div style="writing-mode: vertical-rl; transform: rotate(180deg); padding-right: 10px; font-size: 16px;font-weight: 400;">
+                "banana"
+            </div>
+            <div class="video-compare-container" style="width: 95%">
+                <video class="video lazy" id="ex1" loop playsinline autoplay muted onplay 
+                style="width: 100%; height: auto; display: block;">
+                <source data-src="videos/alignedCourse/banana/bar_obj_semantic.mp4" type="video/mp4">
+            </video>
+            </div>
+        </div>
+
+        <div style="display: flex; align-items: center;">
+            <!-- <h6 class="caption">Category: "bass_horn"</h6> -->
+            <div style="writing-mode: vertical-rl; transform: rotate(180deg); padding-right: 10px; font-size: 16px;font-weight: 400;">
+                "bass_horn"
+            </div>
+            <div class="video-compare-container" style="width: 95%">
+                <video class="video lazy" id="ex1" loop playsinline autoplay muted onplay 
+                style="width: 100%; height: auto; display: block;">
+                <source data-src="videos/alignedCourse/bass_horn/bar_obj_semantic.mp4" type="video/mp4">
+            </video>
+            </div>
+        </div>
+
+        <div style="display: flex; align-items: center;">
+            <!-- <h6 class="caption">Category: "bicycle"</h6> -->
+            <div style="writing-mode: vertical-rl; transform: rotate(180deg); padding-right: 10px; font-size: 16px;font-weight: 400;">
+                "bicycle"
+            </div>
+            <div class="video-compare-container" style="width: 95%">
+                <video class="video lazy" id="ex1" loop playsinline autoplay muted onplay 
+                style="width: 100%; height: auto; display: block;">
+                <source data-src="videos/alignedCourse/bicycle/bar_obj_semantic.mp4" type="video/mp4">
+            </video>
+            </div>
+        </div>
+
+        <div style="display: flex; align-items: center;">
+            <!-- <h6 class="caption">Category: "fighter_jet"</h6> -->
+            <div style="writing-mode: vertical-rl; transform: rotate(180deg); padding-right: 10px; font-size: 16px;font-weight: 400;">
+                "fighter_jet"
+            </div>
+            <div class="video-compare-container" style="width: 95%">
+                <video class="video lazy" id="ex1" loop playsinline autoplay muted onplay 
+                style="width: 100%; height: auto; display: block;">
+                <source data-src="videos/alignedCourse/fighter_jet/bar_obj_semantic.mp4" type="video/mp4">
+            </video>
+            </div>
+        </div>
+
+        <div style="display: flex; align-items: center;">
+            <!-- <h6 class="caption">Category: "foal"</h6> -->
+            <div style="writing-mode: vertical-rl; transform: rotate(180deg); padding-right: 10px; font-size: 16px;font-weight: 400;">
+                "foal"
+            </div>
+            <div class="video-compare-container" style="width: 95%">
+                <video class="video lazy" id="ex1" loop playsinline autoplay muted onplay 
+                style="width: 100%; height: auto; display: block;">
+                <source data-src="videos/alignedCourse/foal/bar_obj_semantic.mp4" type="video/mp4">
+            </video>
+            </div>
+        </div>
+
+        <div style="display: flex; align-items: center;">
+            <!-- <h6 class="caption">Category: "gun"</h6> -->
+            <div style="writing-mode: vertical-rl; transform: rotate(180deg); padding-right: 10px; font-size: 16px;font-weight: 400;">
+                "foal"
+            </div>
+            <div class="video-compare-container" style="width: 95%">
+                <video class="video lazy" id="ex1" loop playsinline autoplay muted onplay 
+                style="width: 100%; height: auto; display: block;">
+                <source data-src="videos/alignedCourse/gun/bar_obj_semantic.mp4" type="video/mp4">
+            </video>
+            </div>
+        </div>
+
+        <div style="display: flex; align-items: center;">
+            <!-- <h6 class="caption">Category: "pocket_watch"</h6> -->
+            <div style="writing-mode: vertical-rl; transform: rotate(180deg); padding-right: 10px; font-size: 16px;font-weight: 400;">
+                "pocket_watch"
+            </div>
+            <div class="video-compare-container" style="width: 95%">
+                <video class="video lazy" id="ex1" loop playsinline autoplay muted onplay 
+                style="width: 100%; height: auto; display: block;">
+                <source data-src="videos/alignedCourse/pocket_watch/bar_obj_semantic.mp4" type="video/mp4">
+            </video>
+            </div>
+        </div>
+
+        <div style="display: flex; align-items: center;">
+            <!-- <h6 class="caption">Category: "shears"</h6> -->
+            <div style="writing-mode: vertical-rl; transform: rotate(180deg); padding-right: 10px; font-size: 16px;font-weight: 400;">
+                "shears"
+            </div>
+            <div class="video-compare-container" style="width: 95%">
+                <video class="video lazy" id="ex1" loop playsinline autoplay muted onplay 
+                style="width: 100%; height: auto; display: block;">
+                <source data-src="videos/alignedCourse/shears/bar_obj_semantic.mp4" type="video/mp4"> 
+                <!-- <source data-src="videos/alignedCourse/shears/resized_resized_obj_semantic_clip.mp4" type="video/mp4">  -->
+            </video>
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- 大量canonicalization可视化 -->
+    <div class="container" style="max-width: 768px; margin-bottom: 40px; width: 100%;">
+        <!-- <h3 class="center-text"><b>Presentation of Canonicalization models</b></h3> -->
+        <div class="x-section-title"><div class="x-gradient-font center-text">Canonicalization Presentation</div></div>
+
+       <!--  <h6 class="caption">Category: "banana"</h6>
+        <div class="video-compare-container" style="width: 95%">
+            <video class="video lazy" id="ex1" loop playsinline autoplay muted onplay 
+            style="width: 100%; height: auto; display: block;">
+            <source data-src="videos/alignedObjs/rabbit/high350_resized_concat.mp4" type="video/mp4">
+        </video>
+        </div> -->
+
+        <h6 class="caption">Category: "race_car"</h6>
+        <div class="video-compare-container" style="width: 95%">
+            <video class="video lazy" id="ex1" loop playsinline autoplay muted onplay 
+            style="width: 100%; height: auto; display: block;">
+            <source data-src="videos/alignedObjs/race_car/high350_resized_concat.mp4" type="video/mp4">
+        </video>
+        </div>
+
+        <h6 class="caption">Category: "raincoat"</h6>
+        <div class="video-compare-container" style="width: 95%">
+            <video class="video lazy" id="ex1" loop playsinline autoplay muted onplay 
+            style="width: 100%; height: auto; display: block;">
+            <source data-src="videos/alignedObjs/raincoat/high350_resized_concat.mp4" type="video/mp4">
+        </video>
+        </div>
+
+        <h6 class="caption">Category: "ring"</h6>
+        <div class="video-compare-container" style="width: 95%">
+            <video class="video lazy" id="ex1" loop playsinline autoplay muted onplay 
+            style="width: 100%; height: auto; display: block;">
+            <source data-src="videos/alignedObjs/ring/high350_resized_concat.mp4" type="video/mp4">
+        </video>
+        </div>
+
+        <h6 class="caption">Category: "shears"</h6>
+        <div class="video-compare-container" style="width: 95%">
+            <video class="video lazy" id="ex1" loop playsinline autoplay muted onplay 
+            style="width: 100%; height: auto; display: block;">
+            <source data-src="videos/alignedObjs/shears/high350_resized_concat.mp4" type="video/mp4">
+        </video>
+        </div>
+
+        <h6 class="caption">Category: "shepherd_dog"</h6>
+        <div class="video-compare-container" style="width: 95%">
+            <video class="video lazy" id="ex1" loop playsinline autoplay muted onplay 
+            style="width: 100%; height: auto; display: block;">
+            <source data-src="videos/alignedObjs/shepherd_dog/high350_resized_concat.mp4" type="video/mp4">
+        </video>
+        </div> 
+
+        <h6 class="caption">Category: "shield"</h6>
+        <div class="video-compare-container" style="width: 95%">
+            <video class="video lazy" id="ex1" loop playsinline autoplay muted onplay 
+            style="width: 100%; height: auto; display: block;">
+            <source data-src="videos/alignedObjs/shield/high350_resized_concat.mp4" type="video/mp4">
+        </video>
+        </div>
+
+        <h6 class="caption">Category: "shoe"</h6>
+        <div class="video-compare-container" style="width: 95%">
+            <video class="video lazy" id="ex1" loop playsinline autoplay muted onplay 
+            style="width: 100%; height: auto; display: block;">
+            <source data-src="videos/alignedObjs/shoe/high350_resized_concat.mp4" type="video/mp4">
+        </video>
+        </div>
+
+        <h6 class="caption">Category: "shopping_cart"</h6>
+        <div class="video-compare-container" style="width: 95%">
+            <video class="video lazy" id="ex1" loop playsinline autoplay muted onplay 
+            style="width: 100%; height: auto; display: block;">
+            <source data-src="videos/alignedObjs/shopping_cart/high350_resized_concat.mp4" type="video/mp4">
+        </video>
+        </div>
+
+        <h6 class="caption">Category: "sink"</h6>
+        <div class="video-compare-container" style="width: 95%">
+            <video class="video lazy" id="ex1" loop playsinline autoplay muted onplay 
+            style="width: 100%; height: auto; display: block;">
+            <source data-src="videos/alignedObjs/sink/high350_resized_concat.mp4" type="video/mp4">
+        </video>
+        </div>
+
+        <h6 class="caption">Category: "skateboard"</h6>
+        <div class="video-compare-container" style="width: 95%">
+            <video class="video lazy" id="ex1" loop playsinline autoplay muted onplay 
+            style="width: 100%; height: auto; display: block;">
+            <source data-src="videos/alignedObjs/skateboard/high350_resized_concat.mp4" type="video/mp4">
+        </video>
+        </div>
+
+        <h6 class="caption">Category: "squirrel"</h6>
+        <div class="video-compare-container" style="width: 95%">
+            <video class="video lazy" id="ex1" loop playsinline autoplay muted onplay 
+            style="width: 100%; height: auto; display: block;">
+            <source data-src="videos/alignedObjs/squirrel/high350_resized_concat.mp4" type="video/mp4">
+        </video>
+        </div>
+
+        <h6 class="caption">Category: "tapestry"</h6>
+        <div class="video-compare-container" style="width: 95%">
+            <video class="video lazy" id="ex1" loop playsinline autoplay muted onplay 
+            style="width: 100%; height: auto; display: block;">
+            <source data-src="videos/alignedObjs/tapestry/high350_resized_concat.mp4" type="video/mp4">
+        </video>
+        </div>
+
+        <h6 class="caption">Category: "trailer_truck"</h6>
+        <div class="video-compare-container" style="width: 95%">
+            <video class="video lazy" id="ex1" loop playsinline autoplay muted onplay 
+            style="width: 100%; height: auto; display: block;">
+            <source data-src="videos/alignedObjs/trailer_truck/high350_resized_concat.mp4" type="video/mp4">
+        </video>
+        </div>
+
+        <h6 class="caption">Category: "vodka"</h6>
+        <div class="video-compare-container" style="width: 95%">
+            <video class="video lazy" id="ex1" loop playsinline autoplay muted onplay 
+            style="width: 100%; height: auto; display: block;">
+            <source data-src="videos/alignedObjs/vodka/high350_resized_concat.mp4" type="video/mp4">
+        </video>
+        </div>
+    </div>
+
+    <!-- <div class="x-section-title"><div class="x-gradient-font">Citation</div></div>
+    <p>
+        If you find our work useful, please consider citing:
+    </p>
+    <p class="bibtex x-gradient-block">
+        @article{
+        }
+    </p> -->
+</div>
+
+    <script src="https://polyfill.io/v3/polyfill.js?features=IntersectionObserver"></script>
+    <script src="js/yall.js"></script>
+    <script>
+        yall(
+            {
+                observeChanges: true
+            }
+        );
+    </script>
+    <!-- <script src="js/scripts.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://uploads-ssl.webflow.com/51e0d73d83d06baa7a00000f/js/webflow.fd002feec.js"></script>
+    <!-- Import the component -->
+</body>
+</html>
